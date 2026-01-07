@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -28,7 +29,7 @@ import androidx.compose.ui.Alignment
 fun TodayScreen(viewModel: TodayViewModel) {
     var showDialog by remember { mutableStateOf(false) }
 
-    val tasks = viewModel.tasks
+    val tasks by viewModel.tasks.collectAsState()
 
     val habits = tasks.filter { it.type == TaskType.HABIT }
     val todos = tasks.filter { it.type == TaskType.TODO }

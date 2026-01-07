@@ -1,48 +1,46 @@
 package com.example.dactylife.viewmodel
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
-import com.example.dactylife.data.model.Task
+import androidx.lifecycle.viewModelScope
+import com.example.dactylife.data.entity.TaskEntity
 import com.example.dactylife.data.model.TaskType
-import java.time.LocalDate
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.example.dactylife.data.repository.TaskRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 
-class TodayViewModel : ViewModel() {
+class TodayViewModel(
+    private val repository: TaskRepository
+) : ViewModel() {
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private val _tasks: SnapshotStateList<Task> = mutableStateListOf(
-        Task(1, "Drink water", TaskType.HABIT),
-        Task(2, "Stretch", TaskType.HABIT),
-        Task(3, "Buy groceries", TaskType.TODO),
-        Task(4, "Change air filter", TaskType.EVENT, scheduledDate = LocalDate.now())
-    )
+    val tasks = repository.tasks
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    val tasks: List<Task> = _tasks
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun toggleTask(taskId: Long) {
-        val index = _tasks.indexOfFirst { it.id == taskId }
-        if (index == -1) return
-
-        val task = _tasks[index]
-        _tasks[index] = task.copy(isCompleted = !task.isCompleted)
+    fun addTask(title: String, type: TaskType) {
+        viewModelScope.launch {
+            repository.addTask(
+                TaskEntity(
+                    title = title,
+                    type = type
+                )
+            )
+        }
     }
 
-    private var nextId = 5L
-    fun addTask(
-        title: String,
-        type: TaskType
-    ) {
-        _tasks.add(
-            Task(
-                id = nextId++,
-                title = title,
-                type = type
+    fun toggleTask(id: Int) {
+        val task = tasks.value.find { it.id == id } ?: return
+        viewModelScope.launch {
+            repository.updateTask(
+                task.copy(
+                    isCompleted = !task.isCompleted
+                )
             )
-        )
+        }
     }
 }

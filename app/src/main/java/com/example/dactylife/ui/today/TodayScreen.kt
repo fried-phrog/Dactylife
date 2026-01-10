@@ -24,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 
-
 @Composable
 fun TodayScreen(viewModel: TodayViewModel) {
     var showDialog by remember { mutableStateOf(false) }

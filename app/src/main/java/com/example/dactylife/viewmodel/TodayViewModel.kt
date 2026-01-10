@@ -35,6 +35,12 @@ class TodayViewModel(
         }
     }
 
+    fun deleteTask(task: TaskEntity) {
+        viewModelScope.launch {
+            repository.deleteTask(task)
+        }
+    }
+
     fun toggleTask(id: Int) {
         val task = tasks.value.find { it.id == id } ?: return
         viewModelScope.launch {

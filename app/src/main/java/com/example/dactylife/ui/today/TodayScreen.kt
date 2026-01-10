@@ -13,26 +13,30 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.dactylife.data.model.TaskType
 import com.example.dactylife.ui.components.SectionTitle
 import com.example.dactylife.viewmodel.TodayViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import java.time.LocalDate
 
 @Composable
 fun TodayScreen(viewModel: TodayViewModel) {
     var showDialog by remember { mutableStateOf(false) }
 
     val tasks by viewModel.tasks.collectAsState()
+    val today = LocalDate.now()
 
     val habits = tasks.filter { it.type == TaskType.HABIT }
     val todos = tasks.filter { it.type == TaskType.TODO }
-    val events = tasks.filter { it.type == TaskType.EVENT }
+    val events = tasks.filter {
+        it.type == TaskType.EVENT && it.date == today
+    }
 
 
     Box (
@@ -47,7 +51,8 @@ fun TodayScreen(viewModel: TodayViewModel) {
             items(habits) { task ->
                 TaskRow(
                     task = task,
-                    onToggle = { viewModel.toggleTask(task.id) }
+                    onToggle = { viewModel.toggleTask(task.id) },
+                    onDelete = { viewModel.deleteTask(task) }
                 )
             }
 
@@ -56,7 +61,8 @@ fun TodayScreen(viewModel: TodayViewModel) {
             items(todos) { task ->
                 TaskRow(
                     task = task,
-                    onToggle = { viewModel.toggleTask(task.id) }
+                    onToggle = { viewModel.toggleTask(task.id) },
+                    onDelete = { viewModel.deleteTask(task) }
                 )
             }
 
@@ -65,7 +71,8 @@ fun TodayScreen(viewModel: TodayViewModel) {
             items(events) { task ->
                 TaskRow(
                     task = task,
-                    onToggle = { viewModel.toggleTask(task.id) }
+                    onToggle = { viewModel.toggleTask(task.id) },
+                    onDelete = { viewModel.deleteTask(task) }
                 )
             }
         }

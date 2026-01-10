@@ -16,4 +16,8 @@ class TaskRepository(
     suspend fun updateTask(task: TaskEntity) {
         dao.updateTask(task)
     }
+
+    suspend fun deleteTask(task: TaskEntity) {
+        dao.deleteTask(task)
+    }
 }

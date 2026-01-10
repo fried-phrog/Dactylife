@@ -1,14 +1,17 @@
 package com.example.dactylife.ui.today
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,8 +20,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.dactylife.data.model.TaskType
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTaskDialog(
     onDismiss: () -> Unit,
@@ -26,7 +32,39 @@ fun AddTaskDialog(
 ) {
     var title by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf(TaskType.HABIT) }
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    if (showDatePicker) {
+        val picker = rememberDatePickerState()
+
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    picker.selectedDateMillis?.let {
+                        selectedDate = Instant.ofEpochMilli(it)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                    }
+
+                    showDatePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDatePicker = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = picker)
+        }
+    }
+
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -37,7 +75,7 @@ fun AddTaskDialog(
                         onAddTask(
                             title,
                             selectedType,
-                            if (selectedType == TaskType.EVENT) selectedDate else null
+                            selectedDate
                         )
                     }
                 }
@@ -74,18 +112,22 @@ fun AddTaskDialog(
 
                 TaskTypeSelector(
                     selected = selectedType,
-                    onSelected = { selectedType = it }
+                    onSelected = {
+                        selectedType = it
+                        if (it != TaskType.EVENT) selectedDate = null
+                    }
                 )
 
                 if (selectedType == TaskType.EVENT) {
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(
-                        text = "Event date: $selectedDate",
-                        modifier = Modifier.clickable {
-                            selectedDate = selectedDate.plusDays(1)
-                        }
-                    )
+                    TextButton(
+                        onClick = { showDatePicker = true }
+                    ) {
+                        Text(
+                            text = selectedDate?.toString() ?: "Pick event date"
+                        )
+                    }
                 }
             }
         }

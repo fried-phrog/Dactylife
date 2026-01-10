@@ -83,8 +83,8 @@ fun TodayScreen(viewModel: TodayViewModel) {
     if (showDialog) {
         AddTaskDialog(
             onDismiss = { showDialog = false },
-            onAddTask = { title, type ->
-                viewModel.addTask(title, type)
+            onAddTask = { title, type, date ->
+                viewModel.addTask(title, type, date)
                 showDialog = false
             }
         )

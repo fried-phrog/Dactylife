@@ -1,5 +1,6 @@
 package com.example.dactylife.ui.today
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,14 +17,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.dactylife.data.model.TaskType
+import java.time.LocalDate
 
 @Composable
 fun AddTaskDialog(
     onDismiss: () -> Unit,
-    onAddTask: (String, TaskType) -> Unit
+    onAddTask: (String, TaskType, LocalDate?) -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf(TaskType.HABIT) }
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -31,7 +34,11 @@ fun AddTaskDialog(
             TextButton(
                 onClick = {
                     if (title.isNotBlank()) {
-                        onAddTask(title, selectedType)
+                        onAddTask(
+                            title,
+                            selectedType,
+                            if (selectedType == TaskType.EVENT) selectedDate else null
+                        )
                     }
                 }
             ) {
@@ -69,6 +76,17 @@ fun AddTaskDialog(
                     selected = selectedType,
                     onSelected = { selectedType = it }
                 )
+
+                if (selectedType == TaskType.EVENT) {
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "Event date: $selectedDate",
+                        modifier = Modifier.clickable {
+                            selectedDate = selectedDate.plusDays(1)
+                        }
+                    )
+                }
             }
         }
     )

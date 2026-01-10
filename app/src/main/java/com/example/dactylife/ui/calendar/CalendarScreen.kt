@@ -2,6 +2,8 @@ package com.example.dactylife.ui.calendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,9 +12,14 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
@@ -22,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.dactylife.viewmodel.CalendarViewModel
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -39,11 +47,20 @@ import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(
+    viewModel: CalendarViewModel
+) {
+    LaunchedEffect(Unit) {
+        viewModel.seedTestEventsIfEmpty()
+    }
+
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(500) }
     val endMonth = remember { currentMonth.plusMonths(500) }
     val daysOfWeek = daysOfWeek(firstDayOfWeek = DayOfWeek.MONDAY)
+
+    val selectedDate by viewModel.selectedDate.collectAsState()
+    val events by viewModel.eventsForSelectedDate.collectAsState()
 
     Column (
         modifier = Modifier.fillMaxSize()
@@ -57,6 +74,12 @@ fun CalendarScreen() {
         )
 
         val visibleMonth = rememberFirstMostVisibleMonth(calendarState, viewportPercent = 90f)
+
+        LaunchedEffect(visibleMonth.yearMonth) {
+            viewModel.onMonthChanged(visibleMonth.yearMonth)
+        }
+
+        val eventDates by viewModel.eventDatesForMonth.collectAsState()
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -83,33 +106,97 @@ fun CalendarScreen() {
 
         HorizontalCalendar(
             state = calendarState,
-            modifier = Modifier.fillMaxSize(),
-            dayContent = { Day(it) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            dayContent = {
+                Day(
+                    day = it,
+                    isSelected = it.date == selectedDate,
+                    hasEvent = eventDates.contains(it.date),
+                    onClick = {
+                        viewModel.onDateSelected(it.date)
+                    }
+                )
+            },
             monthHeader = {
                 DaysOfWeekTitle(daysOfWeek = daysOfWeek)
             }
         )
+
+        if (events.isEmpty()) {
+            Text(
+                text = "No events for this day",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .weight(0.5f),
+                color = Color.Gray,
+                textAlign = TextAlign.Center
+            )
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .weight(0.5f)
+            ) {
+                events.forEach { event ->
+                    Text(
+                        text = "• ${event.title}",
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+            }
+        }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Day(day: CalendarDay) {
+fun Day(
+    day: CalendarDay,
+    isSelected: Boolean,
+    hasEvent: Boolean,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
-            .aspectRatio(1f),
+            .aspectRatio(1f)
+            .fillMaxSize()
+            .clickable(
+                enabled = day.position == DayPosition.MonthDate
+            ) {
+                onClick()
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = day.date.dayOfMonth.toString(),
-            color =
-                if (day.date == LocalDate.now())
-                    Color.Blue
-                else if (day.position == DayPosition.MonthDate)
-                    Color.Black
-                else
-                    Color.LightGray
+
+            color = when {
+                isSelected -> Color.White
+                day.date == LocalDate.now() -> Color.Blue
+                day.position == DayPosition.MonthDate -> Color.Black
+                else -> Color.LightGray
+            },
+
+            modifier = Modifier
+                .background(
+                    if (isSelected) Color.Blue else Color.Transparent,
+                    shape = CircleShape
+                )
+                .padding(8.dp)
         )
+
+        if (hasEvent) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .background(Color.Cyan, CircleShape)
+                    .align(alignment = Alignment.BottomCenter)
+            )
+        }
     }
 }
 

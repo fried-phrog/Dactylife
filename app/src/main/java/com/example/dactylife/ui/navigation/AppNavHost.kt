@@ -7,22 +7,24 @@ import androidx.navigation.compose.composable
 import com.example.dactylife.ui.calendar.CalendarScreen
 import com.example.dactylife.ui.history.HistoryScreen
 import com.example.dactylife.ui.today.TodayScreen
+import com.example.dactylife.viewmodel.CalendarViewModel
 import com.example.dactylife.viewmodel.TodayViewModel
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    viewModel: TodayViewModel
+    todayVM: TodayViewModel,
+    calendarVM: CalendarViewModel
 ) {
     NavHost(
         navController = navController,
         startDestination = Screen.Today.route
     ) {
         composable(Screen.Today.route) {
-            TodayScreen(viewModel)
+            TodayScreen(todayVM)
         }
         composable(Screen.Calendar.route) {
-            CalendarScreen()
+            CalendarScreen(calendarVM)
         }
         composable(Screen.History.route) {
             HistoryScreen()

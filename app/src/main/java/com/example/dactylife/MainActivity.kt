@@ -15,6 +15,8 @@ import com.example.dactylife.data.db.DactylifeDatabase
 import com.example.dactylife.data.repository.TaskRepository
 import com.example.dactylife.ui.navigation.AppNavHost
 import com.example.dactylife.ui.navigation.BottomBar
+import com.example.dactylife.viewmodel.CalendarViewModel
+import com.example.dactylife.viewmodel.CalendarViewModelFactory
 import com.example.dactylife.viewmodel.TodayViewModel
 import com.example.dactylife.viewmodel.TodayViewModelFactory
 
@@ -22,6 +24,7 @@ import com.example.dactylife.viewmodel.TodayViewModelFactory
 class MainActivity : ComponentActivity() {
 
     private lateinit var todayViewModel: TodayViewModel
+    private lateinit var calendarViewModel: CalendarViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,13 +33,16 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             DactylifeDatabase::class.java,
             "dactylife.db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(true)
+            .build()
 
         val repository = TaskRepository(db.taskDao())
-        val factory = TodayViewModelFactory(repository)
+        val todayFactory = TodayViewModelFactory(repository)
+        val calendarFactory = CalendarViewModelFactory(db.taskDao())
 
-        todayViewModel =
-            ViewModelProvider(this, factory)[TodayViewModel::class.java]
+        todayViewModel = ViewModelProvider(this, todayFactory)[TodayViewModel::class.java]
+        calendarViewModel = ViewModelProvider(this, calendarFactory)[CalendarViewModel::class.java]
 
         setContent {
             MaterialTheme {
@@ -52,7 +58,8 @@ class MainActivity : ComponentActivity() {
                     ) {
                         AppNavHost(
                             navController = navController,
-                            viewModel = todayViewModel
+                            todayVM = todayViewModel,
+                            calendarVM = calendarViewModel,
                         )
                     }
                 }

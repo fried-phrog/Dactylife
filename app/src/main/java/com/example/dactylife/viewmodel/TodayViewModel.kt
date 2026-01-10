@@ -8,6 +8,7 @@ import com.example.dactylife.data.repository.TaskRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 
 class TodayViewModel(
@@ -22,12 +23,13 @@ class TodayViewModel(
         )
 
 
-    fun addTask(title: String, type: TaskType) {
+    fun addTask(title: String, type: TaskType, date: LocalDate?) {
         viewModelScope.launch {
             repository.addTask(
                 TaskEntity(
                     title = title,
-                    type = type
+                    type = type,
+                    date = date
                 )
             )
         }

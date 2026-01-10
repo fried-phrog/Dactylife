@@ -1,5 +1,7 @@
 package com.example.dactylife.ui.calendar
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,15 +32,17 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.daysOfWeek
 import kotlinx.coroutines.flow.filterNotNull
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarScreen() {
     val currentMonth = remember { YearMonth.now() }
-    val startMonth = remember { currentMonth.minusMonths(12) }
-    val endMonth = remember { currentMonth.plusMonths(12) }
+    val startMonth = remember { currentMonth.minusMonths(500) }
+    val endMonth = remember { currentMonth.plusMonths(500) }
     val daysOfWeek = daysOfWeek(firstDayOfWeek = DayOfWeek.MONDAY)
 
     Column (
@@ -88,6 +92,7 @@ fun CalendarScreen() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Day(day: CalendarDay) {
     Box(
@@ -97,12 +102,19 @@ fun Day(day: CalendarDay) {
     ) {
         Text(
             text = day.date.dayOfMonth.toString(),
-            color = if (day.position == DayPosition.MonthDate) Color.Black else Color.LightGray
+            color =
+                if (day.date == LocalDate.now())
+                    Color.Blue
+                else if (day.position == DayPosition.MonthDate)
+                    Color.Black
+                else
+                    Color.LightGray
         )
     }
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
     Row(

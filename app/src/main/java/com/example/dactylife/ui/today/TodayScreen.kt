@@ -44,7 +44,9 @@ fun TodayScreen(viewModel: TodayViewModel) {
     val today = LocalDate.now()
 
     val habits = tasks.filter { it.type == TaskType.HABIT }
-    val todos = tasks.filter { it.type == TaskType.TODO }
+    val todos = tasks.filter {
+        it.type == TaskType.TODO && (it.completedAt == null || it.completedAt == today)
+    }
     val events = tasks.filter {
         it.type == TaskType.EVENT && it.date == today
     }

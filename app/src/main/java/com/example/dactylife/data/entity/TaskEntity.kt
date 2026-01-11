@@ -17,5 +17,6 @@ data class TaskEntity (
 
     val date: LocalDate? = null,
 
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+    val completedAt: LocalDate? = null
 )

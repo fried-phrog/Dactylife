@@ -1,5 +1,7 @@
 package com.example.dactylife.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dactylife.data.entity.TaskEntity
@@ -52,12 +54,16 @@ class TodayViewModel(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun toggleTask(id: Int) {
         val task = tasks.value.find { it.id == id } ?: return
+        val today = LocalDate.now()
+
         viewModelScope.launch {
             repository.updateTask(
                 task.copy(
-                    isCompleted = !task.isCompleted
+                    isCompleted = !task.isCompleted,
+                    completedAt = if (!task.isCompleted) today else null
                 )
             )
         }

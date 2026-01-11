@@ -8,7 +8,7 @@ import com.example.dactylife.data.entity.TaskEntity
 
 @Database(
     entities = [TaskEntity::class],
-    version = 2
+    version = 3
 )
 
 @TypeConverters(Converters::class)

@@ -35,9 +35,20 @@ class TodayViewModel(
         }
     }
 
+    private var recentlyDeletedTask: TaskEntity? = null
     fun deleteTask(task: TaskEntity) {
         viewModelScope.launch {
+            recentlyDeletedTask = task
             repository.deleteTask(task)
+        }
+    }
+
+    fun undoDelete() {
+        recentlyDeletedTask?.let { task ->
+            viewModelScope.launch {
+                repository.addTask(task)
+                recentlyDeletedTask = null
+            }
         }
     }
 

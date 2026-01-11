@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.example.dactylife.data.db.DactylifeDatabase
+import com.example.dactylife.data.repository.HabitCompletionRepository
 import com.example.dactylife.data.repository.TaskRepository
 import com.example.dactylife.ui.navigation.AppNavHost
 import com.example.dactylife.ui.navigation.BottomBar
@@ -37,8 +38,13 @@ class MainActivity : ComponentActivity() {
             .fallbackToDestructiveMigration(true)
             .build()
 
-        val repository = TaskRepository(db.taskDao())
-        val todayFactory = TodayViewModelFactory(repository)
+        val taskRepository = TaskRepository(db.taskDao())
+        val habitCompletionRepository = HabitCompletionRepository(db.habitCompletionDao())
+
+        val todayFactory = TodayViewModelFactory(
+            taskRepository,
+            habitCompletionRepository
+        )
         val calendarFactory = CalendarViewModelFactory(db.taskDao())
 
         todayViewModel = ViewModelProvider(this, todayFactory)[TodayViewModel::class.java]

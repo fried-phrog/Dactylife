@@ -3,7 +3,6 @@ package com.example.dactylife.ui.today
 import android.icu.text.DateFormat
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -26,7 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.dactylife.data.model.TaskType
@@ -50,6 +48,8 @@ fun TodayScreen(viewModel: TodayViewModel) {
     val events = tasks.filter {
         it.type == TaskType.EVENT && it.date == today
     }
+
+    val completedHabits by viewModel.completedHabitsToday.collectAsState()
 
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -80,6 +80,7 @@ fun TodayScreen(viewModel: TodayViewModel) {
             items(habits) { task ->
                 TaskRow(
                     task = task,
+                    checked = completedHabits.contains(task.id),
                     onToggle = { viewModel.toggleTask(task.id) },
                     onDelete = {
                         viewModel.deleteTask(task)
@@ -104,6 +105,7 @@ fun TodayScreen(viewModel: TodayViewModel) {
             items(todos) { task ->
                 TaskRow(
                     task = task,
+                    checked = task.isCompleted,
                     onToggle = { viewModel.toggleTask(task.id) },
                     onDelete = {
                         viewModel.deleteTask(task)
@@ -128,6 +130,7 @@ fun TodayScreen(viewModel: TodayViewModel) {
             items(events) { task ->
                 TaskRow(
                     task = task,
+                    checked = task.isCompleted,
                     onToggle = { viewModel.toggleTask(task.id) },
                     onDelete = {
                         viewModel.deleteTask(task)

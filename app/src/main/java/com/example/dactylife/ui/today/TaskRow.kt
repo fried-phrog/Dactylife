@@ -24,6 +24,7 @@ import com.example.dactylife.data.entity.TaskEntity
 @Composable
 fun TaskRow(
     task: TaskEntity,
+    checked: Boolean,
     onToggle: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -69,14 +70,14 @@ fun TaskRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(
-                    checked = task.isCompleted,
+                    checked = checked,
                     onCheckedChange = { onToggle() }
                 )
 
                 Text(
                     text = task.title,
                     modifier = Modifier.padding(start = 8.dp),
-                    style = if (task.isCompleted)
+                    style = if (checked)
                         MaterialTheme.typography.bodyLarge.copy(color = Color.Gray)
                     else
                         MaterialTheme.typography.bodyLarge

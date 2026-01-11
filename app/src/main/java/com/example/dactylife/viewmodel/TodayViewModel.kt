@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dactylife.data.entity.TaskEntity
 import com.example.dactylife.data.model.TaskType
+import com.example.dactylife.data.repository.HabitCompletionRepository
 import com.example.dactylife.data.repository.TaskRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -14,20 +15,32 @@ import java.time.LocalDate
 
 
 class TodayViewModel(
-    private val repository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val habitRepository: HabitCompletionRepository
 ) : ViewModel() {
 
-    val tasks = repository.tasks
+    private val today = LocalDate.now()
+
+    val tasks = taskRepository.tasks
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
+            SharingStarted.WhileSubscribed(5_000),
             emptyList()
         )
+
+    val completedHabitsToday =
+        habitRepository
+            .observeCompletedHabitsForDate(today)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                emptySet()
+            )
 
 
     fun addTask(title: String, type: TaskType, date: LocalDate?) {
         viewModelScope.launch {
-            repository.addTask(
+            taskRepository.addTask(
                 TaskEntity(
                     title = title,
                     type = type,
@@ -41,14 +54,14 @@ class TodayViewModel(
     fun deleteTask(task: TaskEntity) {
         viewModelScope.launch {
             recentlyDeletedTask = task
-            repository.deleteTask(task)
+            taskRepository.deleteTask(task)
         }
     }
 
     fun undoDelete() {
         recentlyDeletedTask?.let { task ->
             viewModelScope.launch {
-                repository.addTask(task)
+                taskRepository.addTask(task)
                 recentlyDeletedTask = null
             }
         }
@@ -57,15 +70,27 @@ class TodayViewModel(
     @RequiresApi(Build.VERSION_CODES.O)
     fun toggleTask(id: Int) {
         val task = tasks.value.find { it.id == id } ?: return
-        val today = LocalDate.now()
 
         viewModelScope.launch {
-            repository.updateTask(
-                task.copy(
-                    isCompleted = !task.isCompleted,
-                    completedAt = if (!task.isCompleted) today else null
-                )
-            )
+            when (task.type) {
+                TaskType.HABIT -> {
+                    val completedToday = habitRepository.isCompletedOnDate(task.id, today)
+
+                    if (completedToday) {
+                        habitRepository.removeCompletion(task.id, today)
+                    } else {
+                        habitRepository.addCompletion(task.id, today)
+                    }
+                }
+
+                else ->
+                    taskRepository.updateTask(
+                        task.copy(
+                            isCompleted = !task.isCompleted,
+                            completedAt = if (!task.isCompleted) today else null
+                        )
+                    )
+            }
         }
     }
 }

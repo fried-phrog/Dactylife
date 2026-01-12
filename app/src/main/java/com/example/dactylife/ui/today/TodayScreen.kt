@@ -77,7 +77,10 @@ fun TodayScreen(viewModel: TodayViewModel) {
             item { SectionTitle( "${DateFormat.getDateInstance().format(today)}" ) }
 
             item { SectionTitle("Habits") }
-            items(habits) { task ->
+            items(
+                habits,
+                key = { it.id }
+            ) { task ->
                 TaskRow(
                     task = task,
                     checked = completedHabits.contains(task.id),
@@ -102,7 +105,10 @@ fun TodayScreen(viewModel: TodayViewModel) {
 
             item { Spacer(Modifier.height(16.dp)) }
             item { SectionTitle("To-Do") }
-            items(todos) { task ->
+            items(
+                todos,
+                key = { it.id }
+            ) { task ->
                 TaskRow(
                     task = task,
                     checked = task.isCompleted,
@@ -127,7 +133,10 @@ fun TodayScreen(viewModel: TodayViewModel) {
 
             item { Spacer(Modifier.height(16.dp)) }
             item { SectionTitle("Events") }
-            items(events) { task ->
+            items(
+                events,
+                key = { it.id }
+            ) { task ->
                 TaskRow(
                     task = task,
                     checked = task.isCompleted,

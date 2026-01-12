@@ -32,7 +32,7 @@ fun TaskRow(
         confirmValueChange = {
             if (it == SwipeToDismissBoxValue.EndToStart) {
                 onDelete()
-                true
+                false
             } else {
                 false
             }

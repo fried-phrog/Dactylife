@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation("com.kizitonwose.calendar:compose:2.7.0")
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.material3)
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)

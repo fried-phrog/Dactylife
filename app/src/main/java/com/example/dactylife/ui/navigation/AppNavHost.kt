@@ -1,5 +1,7 @@
 package com.example.dactylife.ui.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -8,13 +10,16 @@ import com.example.dactylife.ui.calendar.CalendarScreen
 import com.example.dactylife.ui.history.HistoryScreen
 import com.example.dactylife.ui.today.TodayScreen
 import com.example.dactylife.viewmodel.CalendarViewModel
+import com.example.dactylife.viewmodel.HistoryViewModel
 import com.example.dactylife.viewmodel.TodayViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     todayVM: TodayViewModel,
-    calendarVM: CalendarViewModel
+    calendarVM: CalendarViewModel,
+    historyVM: HistoryViewModel
 ) {
     NavHost(
         navController = navController,
@@ -27,7 +32,7 @@ fun AppNavHost(
             CalendarScreen(calendarVM)
         }
         composable(Screen.History.route) {
-            HistoryScreen()
+            HistoryScreen(historyVM)
         }
     }
 }

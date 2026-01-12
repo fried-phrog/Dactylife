@@ -43,6 +43,14 @@ interface HabitCompletionDao {
     ): List<LocalDate>
 
     @Query("""
+        SELECT date FROM habit_completions
+        WHERE habitId = :habitId
+    """)
+    fun observeCompletionDates(
+        habitId: Int
+    ): Flow<List<LocalDate>>
+
+    @Query("""
         SELECT habitId FROM habit_completions
         WHERE date = :date
     """)

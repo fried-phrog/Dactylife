@@ -1,8 +1,10 @@
 package com.example.dactylife
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +20,8 @@ import com.example.dactylife.ui.navigation.AppNavHost
 import com.example.dactylife.ui.navigation.BottomBar
 import com.example.dactylife.viewmodel.CalendarViewModel
 import com.example.dactylife.viewmodel.CalendarViewModelFactory
+import com.example.dactylife.viewmodel.HistoryViewModel
+import com.example.dactylife.viewmodel.HistoryViewModelFactory
 import com.example.dactylife.viewmodel.TodayViewModel
 import com.example.dactylife.viewmodel.TodayViewModelFactory
 
@@ -26,7 +30,9 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var todayViewModel: TodayViewModel
     private lateinit var calendarViewModel: CalendarViewModel
+    private lateinit var historyViewModel: HistoryViewModel
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,9 +52,12 @@ class MainActivity : ComponentActivity() {
             habitCompletionRepository
         )
         val calendarFactory = CalendarViewModelFactory(db.taskDao())
+        val historyFactory = HistoryViewModelFactory(taskRepository, habitCompletionRepository)
 
         todayViewModel = ViewModelProvider(this, todayFactory)[TodayViewModel::class.java]
         calendarViewModel = ViewModelProvider(this, calendarFactory)[CalendarViewModel::class.java]
+        historyViewModel =  ViewModelProvider(this, historyFactory)[HistoryViewModel::class.java]
+
 
         setContent {
             MaterialTheme {
@@ -66,6 +75,7 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             todayVM = todayViewModel,
                             calendarVM = calendarViewModel,
+                            historyVM = historyViewModel
                         )
                     }
                 }

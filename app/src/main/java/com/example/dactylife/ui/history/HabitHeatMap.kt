@@ -1,5 +1,7 @@
 package com.example.dactylife.ui.history
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -38,6 +41,7 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HabitHeatMap(
     completedDates: Set<LocalDate>,
@@ -84,20 +88,18 @@ private fun HabitDay(
 ) {
     val weekDates = week.days.map { it.date }
 
-    when {
-        day.date in startDate..endDate -> {
-            LevelBox(
-                color = if (completed)
-                    Level.Completed.color
-                else
-                    Level.Zero.color
-            )
-        }
+    if (day.date in startDate..endDate) {
+        LevelBox(
+            color = if (completed){
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            }
+        )
 
-        // Keeps alignment in first week
-        weekDates.contains(startDate) -> {
-            LevelBox(Color.Transparent)
-        }
+// Keeps alignment in first week
+    } else if (weekDates.contains(startDate)) {
+        LevelBox(Color.Transparent)
     }
 }
 
@@ -107,7 +109,7 @@ private fun LevelBox(color: Color) {
         modifier = Modifier
             .size(daySize)
             .padding(2.dp)
-            .clip(RoundedCornerShape(2.dp))
+            .clip(RoundedCornerShape(4.dp))
             .background(color)
     )
 }
@@ -120,8 +122,9 @@ private fun WeekHeader(dayOfWeek: DayOfWeek) {
             .padding(horizontal = 4.dp)
     ) {
         Text(
-            text = dayOfWeek.name.take(1),
-            fontSize = 10.sp,
+            text = dayOfWeek.displayText(narrow = true),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.align(Alignment.Center)
         )
     }
@@ -137,6 +140,7 @@ private fun MonthHeader(
     val firstFullyVisibleMonth by remember {
         derivedStateOf { getMonthWithYear(state.layoutInfo, daySize, density) }
     }
+
     if (calendarMonth.weekDays.first().first().date <= endDate) {
         val month = calendarMonth.yearMonth
         val title = if (month == firstFullyVisibleMonth) {
@@ -149,7 +153,12 @@ private fun MonthHeader(
                 .fillMaxWidth()
                 .padding(bottom = 1.dp, start = 2.dp),
         ) {
-            Text(text = title, fontSize = 10.sp)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.padding(bottom = 4.dp, start = 2.dp)
+            )
         }
     }
 }

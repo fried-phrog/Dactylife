@@ -80,7 +80,7 @@ fun TodayScreen(viewModel: TodayViewModel) {
 
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                text = { Text("Add Task") },
+                text = { Text("Add Dactyl") },
                 icon = { Icon(Icons.Default.Add, contentDescription = null) },
                 onClick = { showDialog = true }
             )

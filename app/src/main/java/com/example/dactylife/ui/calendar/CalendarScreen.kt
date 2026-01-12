@@ -1,11 +1,13 @@
 package com.example.dactylife.ui.calendar
 
+import android.R
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,7 +16,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,10 +37,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.dactylife.viewmodel.CalendarViewModel
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.CalendarState
@@ -45,14 +57,13 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.seedTestEventsIfEmpty()
-    }
+    LaunchedEffect(Unit) { viewModel.seedTestEventsIfEmpty() }
 
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(500) }
@@ -61,91 +72,116 @@ fun CalendarScreen(
 
     val selectedDate by viewModel.selectedDate.collectAsState()
     val events by viewModel.eventsForSelectedDate.collectAsState()
+    val eventDates by viewModel.eventDatesForMonth.collectAsState()
 
-    Column (
-        modifier = Modifier.fillMaxSize()
-    ) {
+    val calendarState = rememberCalendarState(
+        startMonth = startMonth,
+        endMonth = endMonth,
+        firstVisibleMonth = currentMonth,
+        firstDayOfWeek = daysOfWeek.first()
+    )
 
-        val calendarState = rememberCalendarState(
-            startMonth = startMonth,
-            endMonth = endMonth,
-            firstVisibleMonth = currentMonth,
-            firstDayOfWeek = daysOfWeek.first()
-        )
+    val visibleMonth = rememberFirstMostVisibleMonth(calendarState, viewportPercent = 90f)
 
-        val visibleMonth = rememberFirstMostVisibleMonth(calendarState, viewportPercent = 90f)
+    LaunchedEffect(visibleMonth.yearMonth) {
+        viewModel.onMonthChanged(visibleMonth.yearMonth)
+    }
 
-        LaunchedEffect(visibleMonth.yearMonth) {
-            viewModel.onMonthChanged(visibleMonth.yearMonth)
-        }
-
-        val eventDates by viewModel.eventDatesForMonth.collectAsState()
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = visibleMonth.yearMonth.month.toString(),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp
-        )
-
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = visibleMonth.yearMonth.year.toString(),
-            textAlign = TextAlign.Center,
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
-
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
-
-        HorizontalCalendar(
-            state = calendarState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            dayContent = {
-                Day(
-                    day = it,
-                    isSelected = it.date == selectedDate,
-                    hasEvent = eventDates.contains(it.date),
-                    onClick = {
-                        viewModel.onDateSelected(it.date)
+    Scaffold(
+        topBar = {
+            MediumTopAppBar(
+                title = {
+                    Column {
+                        Text(
+                            text = visibleMonth.yearMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()),
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Text(
+                            text = visibleMonth.yearMonth.year.toString(),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                )
-            },
-            monthHeader = {
-                DaysOfWeekTitle(daysOfWeek = daysOfWeek)
-            }
-        )
-
-        if (events.isEmpty()) {
-            Text(
-                text = "No events for this day",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .weight(0.5f),
-                color = Color.Gray,
-                textAlign = TextAlign.Center
+                }
             )
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .weight(0.5f)
+        }
+    ) { innerPadding ->
+        Column (
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Surface(
+                tonalElevation = 2.dp,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
             ) {
-                events.forEach { event ->
+                HorizontalCalendar(
+                    state = calendarState,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    dayContent = { day ->
+                        Day(
+                            day = day,
+                            isSelected = day.date == selectedDate,
+                            hasEvent = eventDates.contains(day.date),
+                            onClick = {
+                                viewModel.onDateSelected(day.date)
+                            }
+                        )
+                    },
+                    monthHeader = { DaysOfWeekTitle(daysOfWeek = daysOfWeek) }
+                )
+            }
+
+        // Events List section
+            Text(
+                text = "Schedule",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 24.dp, top = 24.dp, bottom = 8.dp),
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            if (events.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(
-                        text = "• ${event.title}",
-                        modifier = Modifier.padding(vertical = 4.dp)
+                        text = "No events scheduled",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    items(events) { event ->
+                        OutlinedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(12.dp)
+                                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                                )
+
+                                Spacer(Modifier.width(12.dp))
+
+                                Text(
+                                    text = event.title,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -160,42 +196,56 @@ fun Day(
     hasEvent: Boolean,
     onClick: () -> Unit
 ) {
+    val isToday = day.date == LocalDate.now()
+    val isSelectedDate = isSelected
+    val isInMonth = day.position == DayPosition.MonthDate
+
     Box(
         modifier = Modifier
             .aspectRatio(1f)
-            .fillMaxSize()
-            .clickable(
-                enabled = day.position == DayPosition.MonthDate
-            ) {
-                onClick()
-            },
+            .padding(4.dp)
+            .clip(CircleShape)
+            .background(
+                when {
+                    isSelectedDate -> MaterialTheme.colorScheme.primary
+                    isToday -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                    else -> Color.Transparent
+                }
+            )
+            .clickable(enabled = day.position == DayPosition.MonthDate) { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = day.date.dayOfMonth.toString(),
-
-            color = when {
-                isSelected -> Color.White
-                day.date == LocalDate.now() -> Color.Blue
-                day.position == DayPosition.MonthDate -> Color.Black
-                else -> Color.LightGray
-            },
-
-            modifier = Modifier
-                .background(
-                    if (isSelected) Color.Blue else Color.Transparent,
-                    shape = CircleShape
-                )
-                .padding(8.dp)
-        )
-
-        if (hasEvent) {
-            Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .background(Color.Cyan, CircleShape)
-                    .align(alignment = Alignment.BottomCenter)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = day.date.dayOfMonth.toString(),
+                style = MaterialTheme.typography.bodyMedium,
+                color = when {
+                    isSelectedDate -> MaterialTheme.colorScheme.onPrimary
+                    !isInMonth -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                    isToday -> MaterialTheme.colorScheme.primary
+                    else -> MaterialTheme.colorScheme.onSurface
+                }
             )
+
+            if (hasEvent) {
+                Spacer(modifier = Modifier.height(2.dp))
+
+                Box(
+                    modifier = Modifier
+                        .size(4.dp)
+                        .background(
+                            color =
+                                if (isSelectedDate) {
+                                    MaterialTheme.colorScheme.onPrimary
+                                } else {
+                                    MaterialTheme.colorScheme.tertiary
+                                },
+                            CircleShape
+                        )
+                )
+            }
         }
     }
 }
@@ -205,13 +255,17 @@ fun Day(
 @Composable
 fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
     ) {
         for (dayOfWeek in daysOfWeek) {
             Text(
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
-                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

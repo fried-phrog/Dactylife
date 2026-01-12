@@ -94,17 +94,17 @@ fun AddTaskDialog(
         },
 
         title = {
-            Text("New Task")
+            Text("New Dactyl")
         },
 
         text = {
-            Column (
+            Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Task title") },
+                    label = { Text("Dactyl title") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )

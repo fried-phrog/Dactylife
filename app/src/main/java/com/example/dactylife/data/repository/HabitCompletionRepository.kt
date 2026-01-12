@@ -12,11 +12,11 @@ class HabitCompletionRepository(
 
     fun observeCompletedHabitsForDate(
         date: LocalDate
-    ): Flow<Set<Int>> = dao.observeCompletedHabitsForDate(date).map{ it.toSet() }
+    ): Flow<Set<Int>> = dao.observeCompletedHabitsForDate(date).map { it.toSet() }
 
     fun observeCompletionDates(
         habitId: Int
-    ): Flow<Set<LocalDate>> = dao.observeCompletionDates(habitId).map{ it.toSet() }
+    ): Flow<Set<LocalDate>> = dao.observeCompletionDates(habitId).map { it.toSet() }
 
     suspend fun isCompletedOnDate(
         habitId: Int,

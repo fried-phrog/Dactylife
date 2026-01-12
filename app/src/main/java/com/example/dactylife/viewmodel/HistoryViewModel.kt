@@ -16,7 +16,7 @@ import java.time.LocalDate
 class HistoryViewModel(
     private val taskRepository: TaskRepository,
     private val habitRepository: HabitCompletionRepository
-): ViewModel() {
+) : ViewModel() {
 
     val habits =
         taskRepository.tasks

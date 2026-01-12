@@ -22,6 +22,7 @@ class CalendarViewModel(
 
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val eventsForSelectedDate = _selectedDate
         .flatMapLatest { date ->

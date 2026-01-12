@@ -6,7 +6,7 @@ import com.example.dactylife.data.model.TaskType
 import java.time.LocalDate
 
 @Entity(tableName = "tasks")
-data class TaskEntity (
+data class TaskEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 

@@ -10,7 +10,7 @@ class HistoryViewModelFactory(
     private val habitRepository: HabitCompletionRepository
 ) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel> create(modelClass: Class<T>) : T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HistoryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return HistoryViewModel(taskRepository, habitRepository) as T

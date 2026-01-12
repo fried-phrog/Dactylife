@@ -12,7 +12,7 @@ data class BottomNavItem(
     val icon: ImageVector
 )
 
-val bottomNavItems = listOf<BottomNavItem>(
+val bottomNavItems = listOf(
     BottomNavItem(Screen.Today, "Today", Icons.Default.CheckCircle),
     BottomNavItem(Screen.Calendar, "Calendar", Icons.Default.DateRange),
     BottomNavItem(Screen.History, "History", Icons.Default.Favorite)

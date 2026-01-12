@@ -1,6 +1,5 @@
 package com.example.dactylife.ui.calendar
 
-import android.R
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -93,7 +92,10 @@ fun CalendarScreen(
                 title = {
                     Column {
                         Text(
-                            text = visibleMonth.yearMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()),
+                            text = visibleMonth.yearMonth.month.getDisplayName(
+                                TextStyle.FULL,
+                                Locale.getDefault()
+                            ),
                             style = MaterialTheme.typography.headlineMedium
                         )
                         Text(
@@ -106,7 +108,7 @@ fun CalendarScreen(
             )
         }
     ) { innerPadding ->
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -133,7 +135,7 @@ fun CalendarScreen(
                 )
             }
 
-        // Events List section
+            // Events List section
             Text(
                 text = "Schedule",
                 style = MaterialTheme.typography.titleMedium,
@@ -170,7 +172,10 @@ fun CalendarScreen(
                                 Box(
                                     modifier = Modifier
                                         .size(12.dp)
-                                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                                        .background(
+                                            MaterialTheme.colorScheme.primaryContainer,
+                                            CircleShape
+                                        )
                                 )
 
                                 Spacer(Modifier.width(12.dp))
@@ -197,7 +202,6 @@ fun Day(
     onClick: () -> Unit
 ) {
     val isToday = day.date == LocalDate.now()
-    val isSelectedDate = isSelected
     val isInMonth = day.position == DayPosition.MonthDate
 
     Box(
@@ -207,7 +211,7 @@ fun Day(
             .clip(CircleShape)
             .background(
                 when {
-                    isSelectedDate -> MaterialTheme.colorScheme.primary
+                    isSelected -> MaterialTheme.colorScheme.primary
                     isToday -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
                     else -> Color.Transparent
                 }
@@ -222,7 +226,7 @@ fun Day(
                 text = day.date.dayOfMonth.toString(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = when {
-                    isSelectedDate -> MaterialTheme.colorScheme.onPrimary
+                    isSelected -> MaterialTheme.colorScheme.onPrimary
                     !isInMonth -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                     isToday -> MaterialTheme.colorScheme.primary
                     else -> MaterialTheme.colorScheme.onSurface
@@ -237,7 +241,7 @@ fun Day(
                         .size(4.dp)
                         .background(
                             color =
-                                if (isSelectedDate) {
+                                if (isSelected) {
                                     MaterialTheme.colorScheme.onPrimary
                                 } else {
                                     MaterialTheme.colorScheme.tertiary

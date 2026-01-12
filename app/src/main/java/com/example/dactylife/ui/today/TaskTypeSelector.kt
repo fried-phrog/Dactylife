@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.example.dactylife.data.model.TaskType
 
 @Composable
-fun TaskTypeSelector (
+fun TaskTypeSelector(
     selected: TaskType,
     onSelected: (TaskType) -> Unit
 ) {

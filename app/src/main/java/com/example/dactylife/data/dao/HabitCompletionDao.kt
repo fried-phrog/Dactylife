@@ -11,12 +11,14 @@ import java.time.LocalDate
 @Dao
 interface HabitCompletionDao {
 
-    @Query("""
+    @Query(
+        """
         SELECT EXISTS(
             SELECT 1 FROM habit_completions
             WHERE habitId = :habitId AND date = :date
         ) 
-    """)
+    """
+    )
     suspend fun isCompletedOnDate(
         habitId: Int,
         date: LocalDate
@@ -25,35 +27,43 @@ interface HabitCompletionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCompletion(completion: HabitCompletionEntity)
 
-    @Query("""
+    @Query(
+        """
         DELETE FROM habit_completions
         WHERE habitId = :habitId and date = :date
-    """)
+    """
+    )
     suspend fun deleteCompletionForDate(
         habitId: Int,
         date: LocalDate
     )
 
-    @Query("""
+    @Query(
+        """
         SELECT date FROM habit_completions
         WHERE habitId = :habitId
-    """)
+    """
+    )
     suspend fun getCompletionDates(
         habitId: Int
     ): List<LocalDate>
 
-    @Query("""
+    @Query(
+        """
         SELECT date FROM habit_completions
         WHERE habitId = :habitId
-    """)
+    """
+    )
     fun observeCompletionDates(
         habitId: Int
     ): Flow<List<LocalDate>>
 
-    @Query("""
+    @Query(
+        """
         SELECT habitId FROM habit_completions
         WHERE date = :date
-    """)
+    """
+    )
     fun observeCompletedHabitsForDate(
         date: LocalDate
     ): Flow<List<Int>>

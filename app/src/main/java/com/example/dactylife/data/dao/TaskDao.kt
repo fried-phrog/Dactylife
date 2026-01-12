@@ -25,29 +25,34 @@ interface TaskDao {
     @Delete
     suspend fun deleteTask(task: TaskEntity)
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM tasks
         WHERE type = :type
         AND date = :date
         ORDER BY id ASC
-    """)
+    """
+    )
     fun getEventsForDate(
         date: LocalDate,
         type: TaskType = TaskType.EVENT
     ): Flow<List<TaskEntity>>
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM tasks
         WHERE type = :type
         AND date BETWEEN :start AND :end
-    """)
+    """
+    )
     suspend fun getEventsBetween(
         start: LocalDate,
         end: LocalDate,
         type: TaskType = TaskType.EVENT
     ): List<TaskEntity>
 
-    @Query("""
+    @Query(
+        """
         SELECT DISTINCT date FROM tasks
         WHERE type = :type
         AND date BETWEEN :start AND :end
@@ -59,11 +64,13 @@ interface TaskDao {
         type: TaskType = TaskType.EVENT
     ): List<LocalDate>
 
-// for task seeding
-    @Query("""
+    // for task seeding
+    @Query(
+        """
         SELECT COUNT(*) FROM tasks
         WHERE type = :type
-    """)
+    """
+    )
     suspend fun countTasksOfType(
         type: TaskType
     ): Int

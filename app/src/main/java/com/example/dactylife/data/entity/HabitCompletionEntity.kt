@@ -9,7 +9,7 @@ import java.time.LocalDate
     tableName = "habit_completions",
     indices = [Index(value = ["habitId", "date"], unique = true)]
 )
-data class HabitCompletionEntity (
+data class HabitCompletionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 

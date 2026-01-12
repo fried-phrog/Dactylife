@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
         todayViewModel = ViewModelProvider(this, todayFactory)[TodayViewModel::class.java]
         calendarViewModel = ViewModelProvider(this, calendarFactory)[CalendarViewModel::class.java]
-        historyViewModel =  ViewModelProvider(this, historyFactory)[HistoryViewModel::class.java]
+        historyViewModel = ViewModelProvider(this, historyFactory)[HistoryViewModel::class.java]
 
 
         setContent {

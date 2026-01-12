@@ -1,6 +1,5 @@
 package com.example.dactylife.ui.today
 
-import android.icu.text.DateFormat
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
@@ -38,6 +37,8 @@ import com.example.dactylife.ui.components.SectionTitle
 import com.example.dactylife.viewmodel.TodayViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,9 +67,14 @@ fun TodayScreen(viewModel: TodayViewModel) {
             LargeTopAppBar(
                 title = {
                     Column {
+                        val formatter = remember {
+                            DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+                        }
+
                         Text("Today")
                         Text(
-                            text = DateFormat.getDateInstance(DateFormat.LONG).format(today),
+//                            text = DateFormat.getDateInstance(DateFormat.LONG).format(today),
+                            text = today.format(formatter),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

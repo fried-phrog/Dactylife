@@ -1,7 +1,5 @@
 package com.example.dactylife.ui.navigation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,7 +11,6 @@ import com.example.dactylife.viewmodel.CalendarViewModel
 import com.example.dactylife.viewmodel.HistoryViewModel
 import com.example.dactylife.viewmodel.TodayViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavHost(
     navController: NavHostController,

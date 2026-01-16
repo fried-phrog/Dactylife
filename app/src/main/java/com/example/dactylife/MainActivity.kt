@@ -1,10 +1,8 @@
 package com.example.dactylife
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +30,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var calendarViewModel: CalendarViewModel
     private lateinit var historyViewModel: HistoryViewModel
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

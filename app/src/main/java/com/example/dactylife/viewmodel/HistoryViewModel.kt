@@ -1,7 +1,5 @@
 package com.example.dactylife.viewmodel
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dactylife.data.model.TaskType
@@ -14,7 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 
 class HistoryViewModel(
-    private val taskRepository: TaskRepository,
+    taskRepository: TaskRepository,
     private val habitRepository: HabitCompletionRepository
 ) : ViewModel() {
 
@@ -31,7 +29,6 @@ class HistoryViewModel(
         habitId: Int
     ): Flow<Set<LocalDate>> = habitRepository.observeCompletionDates(habitId)
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun calculateStreak(
         completions: Set<LocalDate>
     ): Int {

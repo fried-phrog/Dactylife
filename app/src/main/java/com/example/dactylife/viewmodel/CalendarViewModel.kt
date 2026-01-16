@@ -66,6 +66,7 @@ class CalendarViewModel(
     // seeding function to add testing data
 
     fun seedTestEventsIfEmpty() {
+        /*
         viewModelScope.launch {
             val eventCount = taskDao.countTasksOfType(TaskType.EVENT)
             if (eventCount == 0) {
@@ -104,5 +105,6 @@ class CalendarViewModel(
                 )
             }
         }
+         */
     }
 }

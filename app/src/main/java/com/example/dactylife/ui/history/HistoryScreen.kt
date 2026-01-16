@@ -1,7 +1,5 @@
 package com.example.dactylife.ui.history
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +30,6 @@ import com.example.dactylife.viewmodel.HistoryViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryScreen(viewModel: HistoryViewModel) {
     val habits by viewModel.habits.collectAsState()
@@ -61,7 +58,6 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun HabitHistoryItem(
     habit: TaskEntity,

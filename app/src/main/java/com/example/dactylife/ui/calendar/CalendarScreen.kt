@@ -1,7 +1,5 @@
 package com.example.dactylife.ui.calendar
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -57,7 +55,6 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel
@@ -193,7 +190,6 @@ fun CalendarScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Day(
     day: CalendarDay,
@@ -255,7 +251,6 @@ fun Day(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
     Row(

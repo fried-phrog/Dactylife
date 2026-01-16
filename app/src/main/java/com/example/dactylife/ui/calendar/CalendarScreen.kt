@@ -54,11 +54,13 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
+// Displays a horizontally scrollable monthly calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel
 ) {
+// Testing - Fake event seeding
     LaunchedEffect(Unit) { viewModel.seedTestEventsIfEmpty() }
 
     val currentMonth = remember { YearMonth.now() }
@@ -79,6 +81,7 @@ fun CalendarScreen(
 
     val visibleMonth = rememberFirstMostVisibleMonth(calendarState, viewportPercent = 90f)
 
+// Notify view model when user scrolls to a new month
     LaunchedEffect(visibleMonth.yearMonth) {
         viewModel.onMonthChanged(visibleMonth.yearMonth)
     }
@@ -132,7 +135,7 @@ fun CalendarScreen(
                 )
             }
 
-            // Events List section
+        // Events List section
             Text(
                 text = "Schedule",
                 style = MaterialTheme.typography.titleMedium,
@@ -140,6 +143,7 @@ fun CalendarScreen(
                 color = MaterialTheme.colorScheme.primary
             )
 
+            // Empty state
             if (events.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -150,6 +154,8 @@ fun CalendarScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+
+            // Event list
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -190,6 +196,7 @@ fun CalendarScreen(
     }
 }
 
+// Single day cell inside the calendar
 @Composable
 fun Day(
     day: CalendarDay,
@@ -212,6 +219,8 @@ fun Day(
                     else -> Color.Transparent
                 }
             )
+
+            // Only allow clicking valid month days
             .clickable(enabled = day.position == DayPosition.MonthDate) { onClick() },
         contentAlignment = Alignment.Center
     ) {
@@ -229,6 +238,7 @@ fun Day(
                 }
             )
 
+        // Event indicator dot
             if (hasEvent) {
                 Spacer(modifier = Modifier.height(2.dp))
 

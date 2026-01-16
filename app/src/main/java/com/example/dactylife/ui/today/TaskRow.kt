@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.example.dactylife.data.entity.TaskEntity
 import com.example.dactylife.data.model.TaskType
 
+// Task row UI
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskRow(
@@ -52,6 +53,7 @@ fun TaskRow(
         }
     )
 
+// Swipe to delete task - click to mark task as completed
     SwipeToDismissBox(
         state = dismissState,
         enableDismissFromEndToStart = true,

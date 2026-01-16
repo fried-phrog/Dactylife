@@ -38,6 +38,7 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
+// Habit history logic + visuals
 @Composable
 fun HabitHeatMap(
     completedDates: Set<LocalDate>,
@@ -58,6 +59,8 @@ fun HabitHeatMap(
         modifier = modifier.padding(vertical = 8.dp),
         state = state,
         contentPadding = PaddingValues(end = 6.dp),
+
+    // Draw each day cell
         dayContent = { day, week ->
             HabitDay(
                 day = day,
@@ -74,6 +77,7 @@ fun HabitHeatMap(
 
 private val daySize = 18.dp
 
+// Renders single day square in the heatmap
 @Composable
 private fun HabitDay(
     day: CalendarDay,
@@ -93,12 +97,13 @@ private fun HabitDay(
             }
         )
 
-// Keeps alignment in first week
+// Keeps alignment in start week
     } else if (weekDates.contains(startDate)) {
         LevelBox(Color.Transparent)
     }
 }
 
+// Single colored square
 @Composable
 private fun LevelBox(color: Color) {
     Box(

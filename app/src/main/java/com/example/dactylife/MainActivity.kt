@@ -23,7 +23,7 @@ import com.example.dactylife.viewmodel.HistoryViewModelFactory
 import com.example.dactylife.viewmodel.TodayViewModel
 import com.example.dactylife.viewmodel.TodayViewModelFactory
 
-
+// App entry point
 class MainActivity : ComponentActivity() {
 
     private lateinit var todayViewModel: TodayViewModel
@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+    // Database creation - if schema changes -> wipe old data
         val db = Room.databaseBuilder(
             applicationContext,
             DactylifeDatabase::class.java,
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
         val taskRepository = TaskRepository(db.taskDao())
         val habitCompletionRepository = HabitCompletionRepository(db.habitCompletionDao())
 
+    // View model creation
         val todayFactory = TodayViewModelFactory(
             taskRepository,
             habitCompletionRepository
@@ -55,11 +57,12 @@ class MainActivity : ComponentActivity() {
         calendarViewModel = ViewModelProvider(this, calendarFactory)[CalendarViewModel::class.java]
         historyViewModel = ViewModelProvider(this, historyFactory)[HistoryViewModel::class.java]
 
-
+    // Compose - bottom bar navigation
         setContent {
             MaterialTheme {
                 val navController = rememberNavController()
 
+            // Layout
                 Scaffold(
                     bottomBar = {
                         BottomBar(navController)

@@ -11,11 +11,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 
+// Habit history logic
 class HistoryViewModel(
     taskRepository: TaskRepository,
     private val habitRepository: HabitCompletionRepository
 ) : ViewModel() {
 
+// Filter habits from all tasks
     val habits =
         taskRepository.tasks
             .map { tasks -> tasks.filter { it.type == TaskType.HABIT } }
@@ -25,10 +27,12 @@ class HistoryViewModel(
                 emptyList()
             )
 
+// Emits all dates a habit was completed
     fun habitCompletions(
         habitId: Int
     ): Flow<Set<LocalDate>> = habitRepository.observeCompletionDates(habitId)
 
+// Streak calculation
     fun calculateStreak(
         completions: Set<LocalDate>
     ): Int {

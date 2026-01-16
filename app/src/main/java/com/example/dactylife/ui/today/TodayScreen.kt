@@ -38,21 +38,29 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+// Today UI
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(viewModel: TodayViewModel) {
-    var showDialog by remember { mutableStateOf(false) }
+// Collect task flows from ViewModel
     val tasks by viewModel.tasks.collectAsState()
     val completedHabits by viewModel.completedHabitsToday.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
+
+    var showDialog by remember { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
+// Undo delete snackbar
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+
+// Task filtering
     val today = LocalDate.now()
     val habits = tasks.filter { it.type == TaskType.HABIT }
     val todos = tasks.filter { it.type == TaskType.TODO && (it.completedAt == null || it.completedAt == today) }
     val events = tasks.filter { it.type == TaskType.EVENT && it.date == today }
 
+// UI elements - topbar, task lists
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
@@ -70,7 +78,6 @@ fun TodayScreen(viewModel: TodayViewModel) {
 
                         Text("Today")
                         Text(
-//                            text = DateFormat.getDateInstance(DateFormat.LONG).format(today),
                             text = today.format(formatter),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant

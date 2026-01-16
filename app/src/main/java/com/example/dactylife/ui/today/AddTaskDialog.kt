@@ -24,6 +24,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
+// Add task UI
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTaskDialog(
@@ -35,6 +36,7 @@ fun AddTaskDialog(
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
 
+// A task must have a title, events must also have a date
     val isValid = title.isNotBlank() && (selectedType != TaskType.EVENT || selectedDate != null)
 
     if (showDatePicker) {

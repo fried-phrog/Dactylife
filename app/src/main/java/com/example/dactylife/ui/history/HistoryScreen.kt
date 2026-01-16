@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.example.dactylife.data.entity.TaskEntity
 import com.example.dactylife.viewmodel.HistoryViewModel
 
-
+// History UI - displays each habit and its current streak & heatmap completion history
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(viewModel: HistoryViewModel) {
@@ -58,15 +58,18 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
     }
 }
 
+// Habit info lives in a card
 @Composable
 private fun HabitHistoryItem(
     habit: TaskEntity,
     viewModel: HistoryViewModel
 ) {
+// Collect dates on which this habit was completed
     val completions by viewModel
         .habitCompletions(habit.id)
         .collectAsState(initial = emptySet())
 
+// Streak calculates only when completions change
     val streak = remember(completions) {
         viewModel.calculateStreak(completions)
     }
@@ -78,6 +81,7 @@ private fun HabitHistoryItem(
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+        // Habit name
             Text(
                 text = habit.title,
                 style = MaterialTheme.typography.titleLarge,
@@ -86,6 +90,7 @@ private fun HabitHistoryItem(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+        // Streak
             Surface(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = CircleShape
@@ -106,6 +111,7 @@ private fun HabitHistoryItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
+        // Heatmap calendar
             HabitHeatMap(
                 completedDates = completions,
                 modifier = Modifier.fillMaxWidth()

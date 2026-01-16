@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
 
+// Tracks, loads and displays events
 class CalendarViewModel(
     private val taskDao: TaskDao
 ) : ViewModel() {
@@ -23,6 +24,7 @@ class CalendarViewModel(
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate
 
+// Gets events for currently selected date
     @OptIn(ExperimentalCoroutinesApi::class)
     val eventsForSelectedDate = _selectedDate
         .flatMapLatest { date ->
@@ -38,9 +40,9 @@ class CalendarViewModel(
         _selectedDate.value = date
     }
 
-
     private val _visibleMonth = MutableStateFlow(YearMonth.now())
 
+// Set of dates in currently visible month that have at least one date
     @OptIn(ExperimentalCoroutinesApi::class)
     val eventDatesForMonth = _visibleMonth
         .flatMapLatest { month ->
@@ -63,8 +65,7 @@ class CalendarViewModel(
         _visibleMonth.value = month
     }
 
-    // seeding function to add testing data
-
+// Function to add testing event data
     fun seedTestEventsIfEmpty() {
         /*
         viewModelScope.launch {

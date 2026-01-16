@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-
+// Today screen logic
 class TodayViewModel(
     private val taskRepository: TaskRepository,
     private val habitRepository: HabitCompletionRepository
@@ -19,6 +19,7 @@ class TodayViewModel(
 
     private val today = LocalDate.now()
 
+// Tasks stream
     val tasks = taskRepository.tasks
         .stateIn(
             viewModelScope,
@@ -26,6 +27,7 @@ class TodayViewModel(
             emptyList()
         )
 
+// Set of habit IDs completed today
     val completedHabitsToday =
         habitRepository
             .observeCompletedHabitsForDate(today)
@@ -35,8 +37,9 @@ class TodayViewModel(
                 emptySet()
             )
 
-
+// Adding tasks
     fun addTask(title: String, type: TaskType, date: LocalDate?) {
+    // Events must have a date
         if (type == TaskType.EVENT && date == null) {
             return
         }
@@ -52,6 +55,7 @@ class TodayViewModel(
         }
     }
 
+// Task deletion - remember recently deleted task
     private var recentlyDeletedTask: TaskEntity? = null
     fun deleteTask(task: TaskEntity) {
         viewModelScope.launch {
@@ -60,6 +64,7 @@ class TodayViewModel(
         }
     }
 
+// Deletion undo - reinserts the recently deleted task back into the DB
     fun undoDelete() {
         recentlyDeletedTask?.let { task ->
             viewModelScope.launch {
@@ -69,11 +74,13 @@ class TodayViewModel(
         }
     }
 
+// Task completion - updates completion state in DB
     fun toggleTask(id: Int) {
         val task = tasks.value.find { it.id == id } ?: return
 
         viewModelScope.launch {
             when (task.type) {
+            // Habit completion logic - stores completion dates in separate DB table
                 TaskType.HABIT -> {
                     val completedToday = habitRepository.isCompletedOnDate(task.id, today)
 
@@ -84,6 +91,7 @@ class TodayViewModel(
                     }
                 }
 
+            // TO-DO/Event completion logic - stores completion date in the same DB table
                 else ->
                     taskRepository.updateTask(
                         task.copy(

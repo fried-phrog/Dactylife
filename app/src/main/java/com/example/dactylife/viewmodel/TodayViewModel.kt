@@ -37,6 +37,10 @@ class TodayViewModel(
 
 
     fun addTask(title: String, type: TaskType, date: LocalDate?) {
+        if (type == TaskType.EVENT && date == null) {
+            return
+        }
+
         viewModelScope.launch {
             taskRepository.addTask(
                 TaskEntity(

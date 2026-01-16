@@ -35,6 +35,8 @@ fun AddTaskDialog(
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
 
+    val isValid = title.isNotBlank() && (selectedType != TaskType.EVENT || selectedDate != null)
+
     if (showDatePicker) {
         val picker = rememberDatePickerState()
 
@@ -70,10 +72,11 @@ fun AddTaskDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(
+                enabled = isValid,
                 onClick = {
                     if (title.isNotBlank()) {
                         onAddTask(
-                            title,
+                            title.trim(),
                             selectedType,
                             selectedDate
                         )
